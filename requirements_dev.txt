@@ -1,0 +1,7 @@
+invoke
+twine
+wheel
+zest.releaser
+
+mypy
+django-stubs
