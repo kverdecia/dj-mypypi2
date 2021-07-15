@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import cuid
 
@@ -55,3 +55,24 @@ class TestPackageModel(TestCase):
         found = models.Package.objects.get_by_natural_key(*package.natural_key())
 
         self.assertEqual(package.pk, found.pk)
+
+
+class TestVersionModel(TestCase):
+    def test_function_upload_version_to(self):
+        mocked_version = Mock()
+        package_name = cuid.cuid()
+        file_name = f'{cuid.cuid()}.tar.gz'
+        mocked_version.package.name = package_name
+        self.assertEqual(models.upload_version_to(mocked_version, file_name),
+            f'{package_name}/{file_name}')
+        
+    def test_default_attributes(self):
+        version = models.Version()
+        self.assertRaises(models.Package.DoesNotExist, lambda: version.package)
+        self.assertEqual(version.version, '')
+        self.assertEqual(version.author, '')
+        self.assertEqual(version.author_email, '')
+        self.assertEqual(version.maintainer, '')
+        self.assertEqual(version.maintainer_email, '')
+        
+
