@@ -6,6 +6,13 @@ from django.contrib import admin
 from . import models
 
 
+class VersionInline(admin.TabularInline):
+    "Admin interface for version model."
+    fields = ('version', 'archive_name', 'archive', 'md5_digest', 'uploaded')
+    readonly_fields = fields
+    model = models.Version
+
+
 @admin.register(models.Package)
 class PackageAdmin(admin.ModelAdmin):
     "Admin interface for the package model"
@@ -22,9 +29,12 @@ class PackageAdmin(admin.ModelAdmin):
             'fields': ('description', 'home_page', 'license', 'classifiers')
         }),
     )
+
     readonly_fields = ('name', 'version', 'summary', 'user', 'last_uploaded',
         'author', 'author_email', 'maintainer', 'maintainer_email',  # pylint: disable=bad-continuation
         'description', 'home_page', 'license', 'classifiers')  # pylint: disable=bad-continuation
+
+    inlines = [VersionInline]
 
     def has_add_permission(self, request):
         return False
