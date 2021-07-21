@@ -27,3 +27,15 @@ class TestUrls(TestCase):
 
         view_name = resolve(f'/mypypi2/{package.name}/').view_name
         self.assertEqual(view_name, 'djmypypi2:package-detail')
+
+    def test_download_reverse(self):
+        version: models.Version = factories.VersionFactory()
+
+        url = reverse('djmypypi2:download-package', kwargs={'archive_name': version.archive_name})
+        self.assertEqual(url, f'/mypypi2/@download/{version.archive_name}')
+
+    def test_download_resolve(self):
+        version: models.Version = factories.VersionFactory()
+
+        view_name = resolve(f'/mypypi2/@download/{version.archive_name}').view_name
+        self.assertEqual(view_name, 'djmypypi2:download-package')
