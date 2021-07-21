@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 "Model definition for the python package index"
 import os.path
+
 from django.conf import settings
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 
@@ -47,6 +49,9 @@ class Package(models.Model):
 
     def natural_key(self):
         return (self.uid,)
+
+    def get_absolute_url(self):
+        return reverse("djmypypi2:package-detail", kwargs={"package_name": self.name})
 
 
 def upload_version_to(version, filename):

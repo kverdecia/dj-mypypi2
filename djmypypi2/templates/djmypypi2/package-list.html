@@ -1,0 +1,8 @@
+<html>
+<body>
+    {% for package in object_list %}
+    <a href="{{package.get_absolute_url}}">{{package.name}}</a>
+    <br/> 
+    {% endfor %}
+</body>
+</html>

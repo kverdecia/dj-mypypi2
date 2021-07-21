@@ -41,13 +41,15 @@ class VersionFactory(factory.django.DjangoModelFactory):
     package = factory.LazyAttribute(lambda obj: PackageFactory())
     version = factory.fuzzy.FuzzyInteger(0, 10)
     author = factory.fuzzy.FuzzyText()
-    email = factory.LazyAttribute(lambda obj: f'{cuid.cuid()}@{cuid.cuid()}.com')
+    author_email = factory.LazyAttribute(lambda obj: f'{cuid.cuid()}@{cuid.cuid()}.com')
     maintainer = factory.fuzzy.FuzzyText()
     maintainer_email = factory.LazyAttribute(lambda obj: f'{cuid.cuid()}@{cuid.cuid()}.com')
     summary = factory.fuzzy.FuzzyText()
     description = factory.fuzzy.FuzzyText()
     home_page = factory.LazyAttribute(lambda obj: f'htts://{cuid.cuid()}.com')
     license = factory.fuzzy.FuzzyText()
+    md5_digest = factory.fuzzy.FuzzyText()
+    archive_name = factory.fuzzy.FuzzyText()
 
     class Meta:
-        model = models.Package
+        model = models.Version
