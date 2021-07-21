@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls import url
-from django.views.generic import TemplateView
+"Application urls"
+from django.urls import path
 
 from . import views
 
 
 app_name = 'djmypypi2'
 urlpatterns = [
-    url(r'', TemplateView.as_view(template_name="base.html")),
-    ]
+    path('', views.PackageListView.as_view(), name='package-list'),
+    path('<package_name>/', views.PackageDetailView.as_view(), name='package-detail'),
+]

@@ -4,8 +4,9 @@ from unittest.mock import Mock, patch
 
 import cuid
 
-from django.test import TestCase
+from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.test import TestCase
 
 from djmypypi2 import models
 from djmypypi2 import factories
@@ -56,6 +57,12 @@ class TestPackageModel(TestCase):
 
         self.assertEqual(package.pk, found.pk)
 
+    def test_method_get_absolute_url(self):
+        package: models.Package = factories.PackageFactory()
+
+        url = reverse('djmypypi2:package-detail', kwargs={'package_name': package.name})
+        self.assertEqual(package.get_absolute_url(), url)
+
 
 class TestVersionModel(TestCase):
     def test_function_upload_version_to(self):
@@ -74,5 +81,3 @@ class TestVersionModel(TestCase):
         self.assertEqual(version.author_email, '')
         self.assertEqual(version.maintainer, '')
         self.assertEqual(version.maintainer_email, '')
-        
-
