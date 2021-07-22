@@ -39,3 +39,11 @@ class TestUrls(TestCase):
 
         view_name = resolve(f'/mypypi2/@download/{version.archive_name}').view_name
         self.assertEqual(view_name, 'djmypypi2:download-package')
+
+    def test_upload_reverse(self):
+        url = reverse('djmypypi2:upload-package')
+        self.assertEqual(url, f'/mypypi2/@upload/')
+
+    def test_upload_resolve(self):
+        view_name = resolve(f'/mypypi2/@upload/').view_name
+        self.assertEqual(view_name, 'djmypypi2:upload-package')

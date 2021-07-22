@@ -23,6 +23,7 @@ def basic_authentication(func):
             return func(request, *args, **kwargs)
         username, password = value_items
         user = auth.authenticate(request, username=username, password=password)
-        auth.login(request, user)
+        if user is not None:
+            auth.login(request, user)
         return func(request, *args, **kwargs)
     return _basic_authentication
