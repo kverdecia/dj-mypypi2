@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 "Admin interface for models of package dj-mypypi"
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib import admin
 
 from . import models
@@ -22,7 +22,7 @@ class PackageAdmin(admin.ModelAdmin):
         (None, {
             'fields': ('name', 'version', 'summary', 'user', 'last_uploaded'),
         }),
-        (_("Maintainance"), {
+        (_("Maintenance"), {
             'fields': ('author', 'author_email', 'maintainer', 'maintainer_email')
         }),
         (_("Description"), {
