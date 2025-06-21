@@ -4,6 +4,8 @@ import base64
 
 from django.contrib import auth
 
+from . import models
+
 
 def basic_authentication(func):
     "Decorator for http basic authentication on views."
@@ -22,7 +24,14 @@ def basic_authentication(func):
         if len(value_items) != 2:
             return func(request, *args, **kwargs)
         username, password = value_items
-        user = auth.authenticate(request, username=username, password=password)
+        if username == '__token__':
+            try:
+                token = models.Token.objects.get(token=password)
+                user = token.user
+            except models.Token.DoesNotExist:
+                user = None
+        else:
+            user = auth.authenticate(request, username=username, password=password)
         if user is not None:
             auth.login(request, user)
         return func(request, *args, **kwargs)

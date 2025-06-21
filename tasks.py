@@ -1,19 +1,13 @@
 import os
-import webbrowser
 
-from invoke import task
+import dotenv
+dotenv.load_dotenv(verbose=True, override=True, dotenv_path='.env.tasks')
 
-
-def open_browser(path):
-    try:
-        from urllib import pathname2url
-    except:
-        from urllib.request import pathname2url
-    webbrowser.open("file://" + pathname2url(os.path.abspath(path)))
+from invoke import task. # type: ignore
 
 
 @task
-def clean_build(c):
+def clean(c):
     """
     Remove build artifacts
     """
@@ -23,87 +17,19 @@ def clean_build(c):
 
 
 @task
-def clean_pyc(c):
-    """
-    Remove python file artifacts
-    """
-    c.run("find . -name '*.pyc' -exec rm -f {} +")
-    c.run("find . -name '*.pyo' -exec rm -f {} +")
-    c.run("find . -name '*~' -exec rm -f {} +")
-
-
-@task
-def coverage(c):
-    """
-    check code coverage quickly with the default Python
-    """
-    c.run("coverage run --source dj-mypypi2 runtests.py tests")
-    c.run("coverage report -m")
-    c.run("coverage html")
-    c.run("open htmlcov/index.html")
-
-
-@task
-def docs(c):
-    """
-    Build the documentation and open it in the browser
-    """
-    c.run("rm -f docs/dj-mypypi2.rst")
-    c.run("rm -f docs/modules.rst")
-    c.run("sphinx-apidoc -o docs/ djmypypi2")
-
-    c.run("sphinx-build -E -b html docs docs/_build")
-    open_browser(path='docs/_build/html/index.html')
-
-
-@task
-def test_all(c):
-    """
-    Run tests on every python version with tox
-    """
-    c.run("tox")
-
-
-@task
-def clean(c):
-    """
-    Remove python file and build artifacts
-    """
-    clean_build(c)
-    clean_pyc(c)
-
-
-@task
-def unittest(c):
-    """
-    Run unittests
-    """
-    c.run("python manage.py test")
-
-
-@task
-def lint(c):
-    """
-    Check style with flake8
-    """
-    c.run("flake8 dj-mypypi2 tests")
-
-
-@task(help={'bumpsize': 'Bump either for a "feature" or "breaking" change'})
-def release(c, bumpsize=''):
-    """
-    Package and upload a release
-    """
+def publish(c):
     clean(c)
-    if bumpsize:
-        bumpsize = '--' + bumpsize
-
-    c.run("bumpversion {bump} --no-input".format(bump=bumpsize))
-
-    import dj_mypypi2
-    c.run("python setup.py sdist bdist_wheel")
-    c.run("twine upload dist/*")
-
-    c.run('git tag -a {version} -m "New version: {version}"'.format(version=dj_mypypi2.__version__))
-    c.run("git push --tags")
-    c.run("git push origin master")
+    c.run('uv build')
+    env = {}
+    if os.environ.get('UV_PUBLISH_URL'):
+        env['UV_PUBLISH_URL'] = os.environ['UV_PUBLISH_URL']
+    if os.environ.get('UV_PUBLISH_USERNAME'):
+        env['UV_PUBLISH_USERNAME'] = os.environ['UV_PUBLISH_USERNAME']
+    if os.environ.get('UV_PUBLISH_PASSWORD'):
+        env['UV_PUBLISH_PASSWORD'] = os.environ['UV_PUBLISH_PASSWORD']
+    if os.environ.get('UV_INSECURE_HOST'):
+        env['UV_INSECURE_HOST'] = os.environ['UV_INSECURE_HOST']
+    # c.run('uv publish --color=always')
+    # c.run('git tag -a {version} -m "New version: {version}"'.format(version=djmypypi2.__version__))
+    # c.run("git push --tags")
+    # c.run("git push origin master")
