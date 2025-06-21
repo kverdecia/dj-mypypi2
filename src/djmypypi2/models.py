@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 "Model definition for the python package index"
 import os.path
+import secrets
 
 from django.conf import settings
 from django.urls import reverse
@@ -79,7 +80,7 @@ class Version(models.Model):
 
     archive = models.FileField(_("Package file"), upload_to=upload_version_to)
     archive_name = models.CharField(_("Archive name"), max_length=100, unique=True)
-    md5_digest = models.CharField(_("MD5"), max_length=100, unique=True)
+    md5_digest = models.CharField(_("MD5"), max_length=100, blank=True, default='')
 
     uploaded = models.DateTimeField(_("Uploaded"), auto_now_add=True)
 
@@ -94,3 +95,29 @@ class Version(models.Model):
     def version_archive_exist(cls, archive_name):
         "Returns if the version archive already exist."
         return cls.objects.filter(archive_name=archive_name).count() > 0
+
+
+def generate_token() -> str:
+    return secrets.token_urlsafe(40)
+
+
+class Token(models.Model):
+    "Model for saving tokens"
+    objects = UIDManager()
+
+    uid = models.CharField(_("UID"), max_length=40, default=uids.get_uid, editable=False, unique=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_("User"),
+        on_delete=models.CASCADE, related_name='tokens')
+    name = models.CharField(_("Name"), max_length=100)
+    token = models.CharField(_("Token"), max_length=100, default=generate_token, editable=False, unique=True)
+
+    class Meta:
+        verbose_name = _("Token")
+        verbose_name_plural = _("Tokens")
+
+    def __str__(self):
+        return self.name
+
+    def natural_key(self):
+        return (self.uid,)
+

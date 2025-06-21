@@ -37,7 +37,7 @@ def download_package(request, archive_name) -> FileResponse:
 def upload_package(request):
     "Handle uploading a package."
     package_file = request.FILES['content']
-    # validates the archive doesnot exist
+    # validates the archive does not exist
     if models.Version.version_archive_exist(package_file.name):
         return HttpResponseBadRequest("This package archive already exist: {}".format(
             package_file.name))
@@ -54,17 +54,20 @@ def upload_package(request):
     version = models.Version(package=package)
 
     package.version = version.version = request.POST['version']
-    package.author = version.author = request.POST.get('author')
-    package.author_email = version.author_email = request.POST.get('author_email')
-    package.maintainer = version.maintainer = request.POST.get('maintainer')
-    package.maintainer_email = version.maintainer_email = request.POST.get('maintainer_email')
-    package.summary = version.summary = request.POST.get('summary')
-    package.description = version.description = request.POST.get('description')
-    package.home_page = version.home_page = request.POST.get('home_page')
-    package.license = version.license = request.POST.get('license')
+    package.author = version.author = request.POST.get('author', '')
+    package.author_email = version.author_email = request.POST.get('author_email', '')
+    package.maintainer = version.maintainer = request.POST.get('maintainer', '')
+    package.maintainer_email = version.maintainer_email = request.POST.get('maintainer_email', '')
+    package.summary = version.summary = request.POST.get('summary', '')
+    package.description = version.description = request.POST.get('description', '')
+    package.home_page = version.home_page = request.POST.get('home_page', '')
+    package.license = version.license = request.POST.get('license', '')
     package.classifiers = version.classifiers = "\n".join(request.POST.getlist('classifiers', []))
-    version.md5_digest = request.POST.get('md5_digest')
+    version.md5_digest = request.POST.get('md5_digest', '')
     version.archive_name = package_file.name
+
+    import rich
+    rich.print(request.POST)
 
     package.save()
     version.save()
